@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+html{height:100%;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-serif;background:#0a1628;color:#fff;min-height:100vh;padding-bottom:env(safe-area-inset-bottom,20px);overscroll-behavior:none}
+
+/* NAV */
+.nav{display:flex;border-bottom:1px solid rgba(255,255,255,0.1);background:#0d1d35;position:sticky;top:0;z-index:100;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-top:env(safe-area-inset-top,0);padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0)}
+.nav::-webkit-scrollbar{display:none}
+.logo{display:flex;align-items:center;gap:8px;padding:14px 14px;border-right:1px solid rgba(255,255,255,0.1);flex-shrink:0}
+.logo-bars{display:flex;align-items:flex-end;gap:2px;height:16px}
+.logo-bars span{width:3px;background:#4da3f5;border-radius:1px}
+.logo-bars span:nth-child(1){height:7px}
+.logo-bars span:nth-child(2){height:12px}
+.logo-bars span:nth-child(3){height:16px}
+.logo-text{font-size:12px;font-weight:700;letter-spacing:0.12em}
+.logo-sub{font-size:8px;letter-spacing:0.14em;color:rgba(255,255,255,0.5)}
+.nav button{background:none;border:none;color:rgba(255,255,255,0.5);padding:14px 14px;cursor:pointer;font-size:13px;font-weight:500;letter-spacing:0.03em;white-space:nowrap;border-bottom:2px solid transparent;transition:color .2s;flex-shrink:0;min-height:44px;-webkit-appearance:none}
+.nav button.active{color:#4da3f5;border-bottom-color:#4da3f5}
+
+/* PAGES */
+.page{display:none;padding:20px 16px 60px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));max-width:100%;overflow-x:hidden}
+.page.active{display:block}
+
+/* SHARED */
+.section-title{font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.35);margin-bottom:12px;font-weight:500}
+.card{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px}
+.divider{height:1px;background:rgba(255,255,255,0.07);margin:24px 0}
+
+/* HERO */
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.hero-tag{font-size:11px;letter-spacing:0.14em;color:#4da3f5;font-weight:500;margin-bottom:8px}
+.hero-title{font-size:28px;font-weight:700;line-height:1.2;margin-bottom:10px}
+.hero-title span{color:#4da3f5}
+.hero-desc{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.65;margin-bottom:22px}
+.cap-block{text-align:right;flex-shrink:0;padding-left:10px}
+.cap-block .val{font-size:22px;font-weight:800}
+.cap-block .lbl{font-size:9px;letter-spacing:0.12em;color:rgba(255,255,255,0.4)}
+
+/* METRICS */
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px}
+.metric-card{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 6px;text-align:center}
+.metric-val{font-size:26px;font-weight:800;line-height:1;color:#fff}
+.metric-val span{font-size:16px;color:#4da3f5}
+.metric-range{font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px}
+.metric-label{font-size:9px;letter-spacing:0.1em;color:rgba(255,255,255,0.35);margin-top:3px}
+
+/* STRATEGY */
+.strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.strat-card{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px}
+.strat-icon{font-size:20px;margin-bottom:6px;display:block}
+.strat-title{font-size:13px;font-weight:600;color:#4da3f5;margin-bottom:4px}
+.strat-text{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5}
+
+/* MANDATE */
+.mandate-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.mandate-item{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start}
+.mandate-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.mandate-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
+.mandate-text{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.55}
+
+/* TAGS */
+.tags-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.sector-tag{background:#132340;border:1px solid #4da3f5;border-radius:20px;padding:6px 12px;font-size:11px;font-weight:600;color:#4da3f5}
+.sector-tag.muted{border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);background:transparent}
+
+/* FEES / ALIGN */
+.align-card{background:#0d1d35;border:1px solid rgba(77,163,245,0.25);border-radius:14px;padding:16px;margin-bottom:12px}
+.align-num{font-size:40px;font-weight:800;color:#4da3f5;line-height:1}
+.align-label{font-size:10px;letter-spacing:0.12em;color:rgba(255,255,255,0.4);margin-top:3px}
+.align-desc{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.55;margin-top:10px}
+.fee-table{width:100%;border-collapse:collapse}
+.fee-table tr{border-bottom:1px solid rgba(255,255,255,0.06)}
+.fee-table tr:last-child{border-bottom:none}
+.fee-table td{padding:10px 0;font-size:13px;vertical-align:middle}
+.fee-table td:first-child{color:rgba(255,255,255,0.45);width:55%}
+.fee-table td:last-child{color:#fff;font-weight:500;text-align:right}
+
+/* ONBOARD */
+.onboard-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px}
+.step-card{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;text-align:center;min-height:44px}
+.step-num{width:28px;height:28px;background:#132340;border:1px solid #4da3f5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#4da3f5;margin:0 auto 8px}
+.step-title{font-size:13px;font-weight:600;margin-bottom:4px}
+.step-desc{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.4}
+
+/* BUTTONS */
+.cta-col{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.btn-primary{background:#4da3f5;color:#0a1628;border:none;padding:16px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:0.03em;width:100%;min-height:54px;-webkit-appearance:none;transition:opacity .15s}
+.btn-primary:active{opacity:0.85}
+.btn-dark{background:#132340;color:#4da3f5;border:1px solid #4da3f5;padding:16px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;width:100%;min-height:54px;-webkit-appearance:none;transition:opacity .15s}
+.btn-dark:active{opacity:0.85}
+.btn-outline{background:transparent;color:#4da3f5;border:1px solid #4da3f5;padding:16px;border-radius:14px;font-size:16px;cursor:pointer;width:100%;min-height:54px;-webkit-appearance:none;transition:opacity .15s}
+.btn-outline:active{opacity:0.85}
+.min-inv{font-size:13px;color:rgba(255,255,255,0.4);text-align:center}
+.legal-note{font-size:11px;color:rgba(255,255,255,0.25);line-height:1.6;margin-top:16px;padding:12px;background:rgba(255,255,255,0.03);border-radius:12px}
+
+/* CALCULATOR */
+.calc-header{margin-bottom:20px}
+.calc-header h2{font-size:22px;font-weight:700;margin-bottom:4px}
+.calc-header p{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5}
+.slider-group{margin-bottom:24px}
+.slider-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px}
+.slider-label span:first-child{color:rgba(255,255,255,0.6)}
+.slider-label span:last-child{font-weight:700;color:#4da3f5;font-size:16px}
+input[type=range]{width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,0.1);outline:none;-webkit-appearance:none;cursor:pointer;font-size:16px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;background:#4da3f5;border-radius:50%;cursor:pointer;box-shadow:0 0 0 3px rgba(77,163,245,0.2)}
+.return-highlight{background:#132340;border:1px solid rgba(77,163,245,0.3);border-radius:14px;padding:16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rh-item{text-align:center}
+.rh-val{font-size:24px;font-weight:700;color:#4da3f5}
+.rh-label{font-size:10px;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-top:3px}
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.result-card{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 6px;text-align:center}
+.result-val{font-size:20px;font-weight:700;color:#4da3f5}
+.result-label{font-size:9px;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-top:4px}
+.chart-wrap{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;margin-top:4px}
+.chart-title{font-size:10px;letter-spacing:0.14em;color:rgba(255,255,255,0.4);margin-bottom:14px}
+.bar-chart{display:flex;align-items:flex-end;gap:4px;height:120px;padding-bottom:26px;position:relative}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.bar{width:100%;border-radius:3px 3px 0 0;min-height:2px;position:relative}
+.bar.negative{background:#c0392b;border-radius:0 0 3px 3px;margin-top:auto}
+.bar.positive{background:#1a5fa8}
+.bar.final{background:#4da3f5}
+.bar-label{position:absolute;bottom:-20px;font-size:8px;color:rgba(255,255,255,0.4);white-space:nowrap;text-align:center;left:50%;transform:translateX(-50%)}
+.bar-val{position:absolute;font-size:8px;color:rgba(255,255,255,0.6);white-space:nowrap;text-align:center;left:50%;transform:translateX(-50%)}
+.zero-line{position:absolute;bottom:26px;left:0;right:0;height:1px;background:rgba(255,255,255,0.15)}
+.summary-row{display:flex;gap:8px;margin-top:12px}
+.sum-card{flex:1;background:#132340;border-radius:10px;padding:10px 6px;text-align:center}
+.sum-val{font-size:16px;font-weight:700}
+.sum-label{font-size:9px;letter-spacing:0.08em;color:rgba(255,255,255,0.4);margin-top:2px}
+.disclaimer{font-size:11px;color:rgba(255,255,255,0.3);margin-top:14px;line-height:1.5}
+
+/* PORTFOLIO */
+.progress-section{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;margin-bottom:16px}
+.prog-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.prog-label{font-size:10px;letter-spacing:0.14em;color:rgba(255,255,255,0.4)}
+.prog-val{font-size:18px;font-weight:700}
+.prog-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.prog-fill{height:100%;background:#4da3f5;border-radius:3px;width:12.5%}
+.prog-ticks{display:flex;justify-content:space-between;font-size:9px;color:rgba(255,255,255,0.3)}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-card{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px}
+.stat-big{font-size:30px;font-weight:800;color:#4da3f5}
+.stat-sub{font-size:10px;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-top:4px}
+
+/* ASSET CARDS */
+.asset-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.asset-card{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;cursor:pointer}
+.asset-card.expanded .asset-detail{display:block}
+.asset-card.expanded{border-color:rgba(77,163,245,0.4)}
+.asset-header{padding:14px 14px;display:flex;align-items:center;gap:12px;min-height:64px}
+.asset-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.asset-num.active{background:#132340;color:#4da3f5;border:1px solid #4da3f5}
+.asset-num.new{background:#1a4a6e;color:#4da3f5;border:1px solid #4da3f5}
+.asset-num.pending{background:rgba(39,174,96,0.15);color:#27ae60;border:1px solid rgba(39,174,96,0.4)}
+.asset-info{flex:1;min-width:0}
+.asset-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.asset-meta{font-size:12px;color:rgba(255,255,255,0.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asset-badge{padding:5px 9px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:0.06em;flex-shrink:0;white-space:nowrap}
+.badge-active{background:rgba(77,163,245,0.1);color:#4da3f5;border:1px solid rgba(77,163,245,0.3)}
+.badge-new{background:rgba(77,163,245,0.2);color:#4da3f5;border:1px solid #4da3f5}
+.badge-pipeline{background:rgba(39,174,96,0.1);color:#27ae60;border:1px solid rgba(39,174,96,0.3)}
+.asset-detail{display:none;border-top:1px solid rgba(255,255,255,0.07);padding:14px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-item label{font-size:10px;letter-spacing:0.1em;color:rgba(255,255,255,0.35);display:block;margin-bottom:3px}
+.detail-item span{font-size:14px;font-weight:500;color:#fff}
+.detail-item span.blue{color:#4da3f5}
+
+/* COUNTRIES */
+.countries-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.country-card{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 8px;text-align:center}
+.country-name{font-size:12px;font-weight:600;margin-bottom:3px}
+.country-code{font-size:10px;letter-spacing:0.1em;color:#4da3f5}
+.why-grid{display:flex;flex-direction:column;gap:8px}
+.why-card{background:#0d1d35;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px}
+.why-title{font-size:14px;font-weight:600;margin-bottom:5px;color:#4da3f5}
+.why-text{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.55}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="logo">
+    <div class="logo-bars"><span></span><span></span><span></span></div>
+    <div><div class="logo-text">ETRA</div><div class="logo-sub">LEGACY FUND</div></div>
+  </div>
+  <button class="active" onclick="show('overview',this)">Resumen</button>
+  <button onclick="show('calculator',this)">Calculadora</button>
+  <button onclick="show('portfolio',this)">Portafolio</button>
+  <button onclick="show('countries',this)">Mercados</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="overview" class="page active">
+  <div class="hero-top">
+    <div>
+      <div class="hero-tag">INVERSIÓN INMOBILIARIA INSTITUCIONAL</div>
+      <h1 class="hero-title">Bienes raíces<br>CA y el <span>Caribe</span></h1>
+    </div>
+    <div class="cap-block">
+      <div class="val">$100M</div>
+      <div class="lbl">CAPITAL OBJETIVO</div>
+    </div>
+  </div>
+  <p class="hero-desc">Fondo privado <em>close-end</em> basado en Panamá, 10 años. Activos industriales y de oficinas Clase A y B ya estabilizados — contratos vigentes, flujo activo, sin desarrollo ni especulación.</p>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-val">12<span>%</span></div>
+      <div class="metric-range">Obj: 9–11%</div>
+      <div class="metric-label">TIR NETA</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">2.2<span>x</span></div>
+      <div class="metric-range">1.8–2.2x</div>
+      <div class="metric-label">MOIC</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">9<span>%</span></div>
+      <div class="metric-range">Obj: 6.5–8.5%</div>
+      <div class="metric-label">CASH-ON-CASH</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-title">ESTRATEGIA DE INVERSIÓN</div>
+  <div class="strategy-grid">
+    <div class="strat-card"><span class="strat-icon">🏢</span><div class="strat-title">Activos estabilizados</div><div class="strat-text">Clase A y B con contratos 5+ años. Sin construcción ni riesgo de absorción.</div></div>
+    <div class="strat-card"><span class="strat-icon">💵</span><div class="strat-title">Contratos en USD</div><div class="strat-text">100% en dólares. Sin riesgo cambiario para el inversionista.</div></div>
+    <div class="strat-card"><span class="strat-icon">⚖️</span><div class="strat-title">Financiamiento híbrido</div><div class="strat-text">~50/50 equity-deuda, hasta 60% LTV. Cap rates 9–12%.</div></div>
+    <div class="strat-card"><span class="strat-icon">📋</span><div class="strat-title">Arrendamiento neto</div><div class="strat-text">Inquilinos pagan mantenimiento y servicios. Gastos del fondo predecibles.</div></div>
+    <div class="strat-card"><span class="strat-icon">🌎</span><div class="strat-title">Diversificación</div><div class="strat-text">5 países, 3 sectores. Concentración mínima de riesgo.</div></div>
+    <div class="strat-card"><span class="strat-icon">📊</span><div class="strat-title">Data-driven</div><div class="strat-text">Inteligencia de mercado regional y plataforma Agora para el inversionista.</div></div>
+  </div>
+
+  <div class="section-title">MANDATO DE INVERSIÓN</div>
+  <div class="mandate-list">
+    <div class="mandate-item">
+      <div class="mandate-icon">🎯</div>
+      <div><div class="mandate-title">Criterios de adquisición</div><div class="mandate-text">Activos Class A y B en zonas privilegiadas. Contratos vigentes de mediano y largo plazo. Ticket por activo: $5M–$25M. Mercados con estabilidad macroeconómica y potencial de apreciación.</div></div>
+    </div>
+    <div class="mandate-item">
+      <div class="mandate-icon">🛡️</div>
+      <div><div class="mandate-title">Calidad de inquilinos</div><div class="mandate-text">Multinacionales AAA u operadores locales sólidos. Contratos con ajustes por inflación y protecciones contractuales. Inquilinos actuales: Megalabs, Telus, Alórica, Estee Lauder, INARI.</div></div>
+    </div>
+    <div class="mandate-item">
+      <div class="mandate-icon">🔄</div>
+      <div><div class="mandate-title">Estrategia contracíclica</div><div class="mandate-text">Identificamos activos subvaluados con proyecciones de recuperación. Menor competencia institucional vs. mercados maduros permite cap rates que no existen en EE.UU. o México.</div></div>
+    </div>
+    <div class="mandate-item">
+      <div class="mandate-icon">🚪</div>
+      <div><div class="mandate-title">Plan de salida</div><div class="mandate-text">Disposición ordenada del portafolio al final del Año 10. Fase de consolidación 2028–2033 para optimizar rentas y preparar la salida a cap rate de mercado.</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div>
+      <div class="section-title">SECTORES</div>
+      <div class="tags-row">
+        <span class="sector-tag">Industrial 40%</span>
+        <span class="sector-tag">Oficinas 40%</span>
+        <span class="sector-tag">Retail 20%</span>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">MERCADOS</div>
+      <div class="tags-row">
+        <span class="sector-tag muted">GT</span><span class="sector-tag muted">PA</span><span class="sector-tag muted">SV</span><span class="sector-tag muted">DO</span><span class="sector-tag muted">CR</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-title">ALINEACIÓN — INTUS CAPITAL (GP)</div>
+  <div class="align-card">
+    <div class="align-num">10%</div>
+    <div class="align-label">CO-INVERSIÓN DEL GP</div>
+    <div class="align-desc">Intus Capital co-invierte el 10% del equity. Si al inversionista le va bien, al GP también. Helston Inc. es el inversionista ancla con el 20% del fondo.</div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="section-title" style="margin-bottom:10px">ESTRUCTURA DE FEES</div>
+    <table class="fee-table">
+      <tr><td>Management Fee</td><td>1.00% anual</td></tr>
+      <tr><td>Promote Fee</td><td>20% sobre >7%</td></tr>
+      <tr><td>Fee estructuración</td><td>1.00% por activo</td></tr>
+      <tr><td>Apalancamiento máx.</td><td>60% LTV</td></tr>
+      <tr><td>Duración</td><td>10 años (+2)</td></tr>
+      <tr><td>Inversión mínima</td><td>$100,000</td></tr>
+    </table>
+  </div>
+
+  <div class="section-title">PROCESO — PLATAFORMA AGORA</div>
+  <div class="onboard-steps">
+    <div class="step-card" style="cursor:pointer" onclick="openLink('https://intuscorp.portal.agorareal.com/#/public/brochure/2/f487e9a4-f945-4d5d-af61-878702c797bf')">
+      <div class="step-num">01</div><div class="step-title">Reserva ↗</div><div class="step-desc">Asegura tu posición en la plataforma Agora.</div>
+    </div>
+    <div class="step-card"><div class="step-num">02</div><div class="step-title">Due diligence</div><div class="step-desc">Acceso al data room con modelos y documentos legales.</div></div>
+    <div class="step-card"><div class="step-num">03</div><div class="step-title">Suscripción</div><div class="step-desc">Completa tu suscripción en el portal.</div></div>
+    <div class="step-card"><div class="step-num">04</div><div class="step-title">Transferencia</div><div class="step-desc">Transfiere y comienza a recibir distribuciones mensuales.</div></div>
+  </div>
+
+  <div class="cta-col">
+    <button class="btn-primary" onclick="show('calculator',document.querySelectorAll('.nav button')[1])">Calcular mi retorno →</button>
+    <button class="btn-dark" onclick="openLink('https://intuscorp.portal.agorareal.com/#/public/brochure/2/f487e9a4-f945-4d5d-af61-878702c797bf')">Reservar mi posición en Agora ↗</button>
+    <button class="btn-outline" onclick="show('portfolio',document.querySelectorAll('.nav button')[2])">Ver portafolio actual</button>
+    <span class="min-inv">Inversión mínima: $100,000 USD</span>
+  </div>
+  <div class="legal-note">Esta presentación se proporciona únicamente con fines informativos y no constituye una oferta para vender valores. Todas las inversiones implican riesgos. Auditores: Grupo CFE · Asesores legales: Morgan & Morgan / DeConsulta Legal.</div>
+</div>
+
+<!-- CALCULATOR -->
+<div id="calculator" class="page">
+  <div class="calc-header">
+    <h2>Simulador de inversión</h2>
+    <p>Proyección neta de fees e impuestos · 10 años · Venta del portafolio en Año 10</p>
+  </div>
+  <div class="slider-group">
+    <div class="slider-label">
+      <span>Capital inicial</span>
+      <span id="capLabel">$100,000</span>
+    </div>
+    <input type="range" id="capSlider" min="100000" max="5000000" step="50000" value="100000" oninput="calc()">
+  </div>
+  <div class="return-highlight">
+    <div class="rh-item">
+      <div class="rh-val" id="rh-monthly">$763</div>
+      <div class="rh-label">DISTRIBUCIÓN MENSUAL</div>
+    </div>
+    <div class="rh-item">
+      <div class="rh-val" id="rh-annual">$9,150</div>
+      <div class="rh-label">RETORNO ANUAL AÑO 1</div>
+    </div>
+  </div>
+  <div class="results-grid">
+    <div class="result-card"><div class="result-val" id="r-total">$221K</div><div class="result-label">TOTAL RECIBIDO</div></div>
+    <div class="result-card"><div class="result-val" id="r-dist">$121K</div><div class="result-label">DISTRIBUCIONES</div></div>
+    <div class="result-card"><div class="result-val" id="r-moic">2.21x</div><div class="result-label">MOIC</div></div>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">FLUJO NETO ANUAL — 10 AÑOS</div>
+    <div class="bar-chart" id="barChart"><div class="zero-line"></div></div>
+    <div class="summary-row">
+      <div class="sum-card"><div class="sum-val" id="s-inv">$100K</div><div class="sum-label">INVERTIDO</div></div>
+      <div class="sum-card"><div class="sum-val" id="s-dist">$121K</div><div class="sum-label">DISTRIBUCIONES</div></div>
+      <div class="sum-card"><div class="sum-val" id="s-total">$221K</div><div class="sum-label">TOTAL</div></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="section-title" style="margin-bottom:10px">SUPUESTOS DEL MODELO</div>
+    <table class="fee-table">
+      <tr><td>Cap rate de compra</td><td>9%–12%</td></tr>
+      <tr><td>Apalancamiento</td><td>~50% equity / 50% deuda</td></tr>
+      <tr><td>Cash-on-cash Año 1</td><td>8.3% neto</td></tr>
+      <tr><td>Venta del portafolio</td><td>Cap rate 10% en Año 10</td></tr>
+      <tr><td>Retornos</td><td>Netos de fees e impuestos</td></tr>
+    </table>
+  </div>
+  <div style="margin-top:14px">
+    <button class="btn-dark" onclick="openLink('https://intuscorp.portal.agorareal.com/#/public/brochure/2/f487e9a4-f945-4d5d-af61-878702c797bf')">Reservar mi posición en Agora ↗</button>
+  </div>
+  <div class="disclaimer">* Proyecciones ilustrativas. La distribución mensual corresponde al promedio del Año 1 (8.3% anual ÷ 12).</div>
+</div>
+
+<!-- PORTFOLIO -->
+<div id="portfolio" class="page">
+  <div class="section-title">AVANCE HACIA META DEL FONDO</div>
+  <div class="progress-section">
+    <div class="prog-header">
+      <span class="prog-label">CAPITAL LEVANTADO</span>
+      <span class="prog-val">$25M <span style="font-size:13px;color:rgba(255,255,255,0.4);font-weight:400">/ $200M</span></span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill"></div></div>
+    <div class="prog-ticks"><span>$0</span><span>$50M</span><span>$100M</span><span>$150M</span><span>$200M</span></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-big">3</div><div class="stat-sub">ACTIVOS EN PORTAFOLIO</div></div>
+    <div class="stat-card"><div class="stat-big">$25M</div><div class="stat-sub">VALOR DE ACTIVOS</div></div>
+  </div>
+
+  <div class="section-title">ACTIVOS ACTUALES — toca para ver detalle</div>
+  <div class="asset-list">
+    <div class="asset-card" onclick="toggleAsset(this)">
+      <div class="asset-header">
+        <div class="asset-num active">1</div>
+        <div class="asset-info"><div class="asset-name">Megalabs — Oficinas</div><div class="asset-meta">Guatemala · Farmacéutica · Flujo activo</div></div>
+        <span class="asset-badge badge-active">ACTIVO</span>
+      </div>
+      <div class="asset-detail">
+        <div class="detail-grid">
+          <div class="detail-item"><label>INQUILINO</label><span>Megalabs</span></div>
+          <div class="detail-item"><label>INDUSTRIA</label><span>Farmacéutica</span></div>
+          <div class="detail-item"><label>ÁREA</label><span>660 m²</span></div>
+          <div class="detail-item"><label>VALOR</label><span class="blue">$2.20M</span></div>
+          <div class="detail-item"><label>TIPO</label><span>Oficinas</span></div>
+          <div class="detail-item"><label>PAÍS</label><span>Guatemala</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="asset-card" onclick="toggleAsset(this)">
+      <div class="asset-header">
+        <div class="asset-num active">2</div>
+        <div class="asset-info"><div class="asset-name">Megalabs — Oficinas</div><div class="asset-meta">Guatemala · Farmacéutica · Flujo activo</div></div>
+        <span class="asset-badge badge-active">ACTIVO</span>
+      </div>
+      <div class="asset-detail">
+        <div class="detail-grid">
+          <div class="detail-item"><label>INQUILINO</label><span>Megalabs</span></div>
+          <div class="detail-item"><label>INDUSTRIA</label><span>Farmacéutica</span></div>
+          <div class="detail-item"><label>ÁREA</label><span>790 m²</span></div>
+          <div class="detail-item"><label>VALOR</label><span class="blue">$1.84M</span></div>
+          <div class="detail-item"><label>TIPO</label><span>Oficinas</span></div>
+          <div class="detail-item"><label>PAÍS</label><span>Guatemala</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="asset-card" onclick="toggleAsset(this)" style="border-color:rgba(77,163,245,0.4)">
+      <div class="asset-header">
+        <div class="asset-num new">3</div>
+        <div class="asset-info"><div class="asset-name">Telus — Oficinas</div><div class="asset-meta">Guatemala · Call Center · Distribuciones iniciando</div></div>
+        <span class="asset-badge badge-new">NUEVO</span>
+      </div>
+      <div class="asset-detail">
+        <div class="detail-grid">
+          <div class="detail-item"><label>INQUILINO</label><span>Telus</span></div>
+          <div class="detail-item"><label>INDUSTRIA</label><span>Call Center</span></div>
+          <div class="detail-item"><label>ÁREA</label><span>4,150 m²</span></div>
+          <div class="detail-item"><label>VALOR</label><span class="blue">$10.25M</span></div>
+          <div class="detail-item"><label>TIPO</label><span>Oficinas</span></div>
+          <div class="detail-item"><label>PAÍS</label><span>Guatemala</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">PIPELINE — PRÓXIMAS ADQUISICIONES</div>
+  <div class="asset-list">
+    <div class="asset-card" onclick="toggleAsset(this)">
+      <div class="asset-header">
+        <div class="asset-num pending">4</div>
+        <div class="asset-info"><div class="asset-name">Alórica &amp; GPF</div><div class="asset-meta">Panamá · Call Center &amp; Family Office · Feb 2026</div></div>
+        <span class="asset-badge badge-pipeline">FEB 2026</span>
+      </div>
+      <div class="asset-detail">
+        <div class="detail-grid">
+          <div class="detail-item"><label>INQUILINOS</label><span>Alórica y GPF</span></div>
+          <div class="detail-item"><label>INDUSTRIA</label><span>Call Center / FO</span></div>
+          <div class="detail-item"><label>ÁREA</label><span>10,154 m²</span></div>
+          <div class="detail-item"><label>VALOR</label><span class="blue">$12.00M</span></div>
+          <div class="detail-item"><label>TIPO</label><span>Oficinas</span></div>
+          <div class="detail-item"><label>PAÍS</label><span>Panamá</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="asset-card" onclick="toggleAsset(this)">
+      <div class="asset-header">
+        <div class="asset-num pending">5</div>
+        <div class="asset-info"><div class="asset-name">Estee Lauder</div><div class="asset-meta">Panamá · Producto de Belleza · Jun 2026</div></div>
+        <span class="asset-badge badge-pipeline">JUN 2026</span>
+      </div>
+      <div class="asset-detail">
+        <div class="detail-grid">
+          <div class="detail-item"><label>INQUILINO</label><span>Estee Lauder</span></div>
+          <div class="detail-item"><label>INDUSTRIA</label><span>Producto de Belleza</span></div>
+          <div class="detail-item"><label>ÁREA</label><span>3,131 m²</span></div>
+          <div class="detail-item"><label>VALOR</label><span class="blue">$6.80M</span></div>
+          <div class="detail-item"><label>TIPO</label><span>Oficinas</span></div>
+          <div class="detail-item"><label>PAÍS</label><span>Panamá</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="asset-card" onclick="toggleAsset(this)">
+      <div class="asset-header">
+        <div class="asset-num pending">6</div>
+        <div class="asset-info"><div class="asset-name">INARI — Industrial</div><div class="asset-meta">Costa Rica · Medtech · Nov 2026</div></div>
+        <span class="asset-badge badge-pipeline">NOV 2026</span>
+      </div>
+      <div class="asset-detail">
+        <div class="detail-grid">
+          <div class="detail-item"><label>INQUILINO</label><span>INARI</span></div>
+          <div class="detail-item"><label>INDUSTRIA</label><span>Medtech</span></div>
+          <div class="detail-item"><label>ÁREA</label><span>7,280 m²</span></div>
+          <div class="detail-item"><label>VALOR</label><span class="blue">$7.00M</span></div>
+          <div class="detail-item"><label>TIPO</label><span>Industrial</span></div>
+          <div class="detail-item"><label>PAÍS</label><span>Costa Rica</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn-dark" onclick="openLink('https://intuscorp.portal.agorareal.com/#/public/brochure/2/f487e9a4-f945-4d5d-af61-878702c797bf')">Reservar mi posición en Agora ↗</button>
+</div>
+
+<!-- COUNTRIES -->
+<div id="countries" class="page">
+  <div class="section-title">MERCADOS OBJETIVO</div>
+  <div class="countries-grid">
+    <div class="country-card"><div style="font-size:30px;margin-bottom:6px">🇬🇹</div><div class="country-name">Guatemala</div><div class="country-code">GT</div></div>
+    <div class="country-card"><div style="font-size:30px;margin-bottom:6px">🇵🇦</div><div class="country-name">Panamá</div><div class="country-code">PA</div></div>
+    <div class="country-card"><div style="font-size:30px;margin-bottom:6px">🇸🇻</div><div class="country-name">El Salvador</div><div class="country-code">SV</div></div>
+    <div class="country-card"><div style="font-size:30px;margin-bottom:6px">🇩🇴</div><div class="country-name">Rep. Dom.</div><div class="country-code">DO</div></div>
+    <div class="country-card"><div style="font-size:30px;margin-bottom:6px">🇨🇷</div><div class="country-name">Costa Rica</div><div class="country-code">CR</div></div>
+  </div>
+  <div class="section-title">¿POR QUÉ ESTA REGIÓN?</div>
+  <div class="why-grid">
+    <div class="why-card"><div class="why-title">Crecimiento sostenido</div><div class="why-text">PIB por encima del promedio global, impulsado por nearshoring y expansión de multinacionales como Telus, Estee Lauder e INARI.</div></div>
+    <div class="why-card"><div class="why-title">Contratos en USD</div><div class="why-text">Panamá y El Salvador operan en dólares. Todos los contratos del fondo están denominados en USD para eliminar riesgo cambiario.</div></div>
+    <div class="why-card"><div class="why-title">Demanda corporativa AAA</div><div class="why-text">Multinacionales en expansión regional generan demanda sostenida de activos industriales y de oficinas Clase A y B con contratos largos.</div></div>
+    <div class="why-card"><div class="why-title">Mercado subpenetrado</div><div class="why-text">Menor competencia institucional que en EE.UU. o México permite cap rates de 9–12% que no existen en mercados maduros.</div></div>
+  </div>
+</div>
+
+<script>
+function show(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function toggleAsset(card){card.classList.toggle('expanded')}
+function openLink(url){window.open(url,'_blank')}
+const cocByYear=[0,8.3,8.1,8.2,8.8,9.2,9.8,10.1,10.6,11.2,0];
+function fmt(n){
+  if(Math.abs(n)>=1e6)return(n/1e6).toFixed(1).replace(/\.0$/,'')+'M';
+  if(Math.abs(n)>=1e3)return(n/1e3).toFixed(0)+'K';
+  return n.toFixed(0);
+}
+function calc(){
+  const cap=parseInt(document.getElementById('capSlider').value);
+  document.getElementById('capLabel').textContent='$'+cap.toLocaleString();
+  const flows=[];let totalDist=0;
+  for(let y=1;y<=10;y++){const d=(cocByYear[y]/100)*cap;flows.push({y,val:d});totalDist+=d;}
+  const saleVal=cap*Math.pow(1.04,10)*0.72;
+  const total=totalDist+saleVal;
+  const yr1=flows[0].val;
+  document.getElementById('rh-monthly').textContent='$'+Math.round(yr1/12).toLocaleString();
+  document.getElementById('rh-annual').textContent='$'+Math.round(yr1).toLocaleString();
+  document.getElementById('r-total').textContent='$'+fmt(total);
+  document.getElementById('r-dist').textContent='$'+fmt(totalDist);
+  document.getElementById('r-moic').textContent=(total/cap).toFixed(2)+'x';
+  document.getElementById('s-inv').textContent='$'+fmt(cap);
+  document.getElementById('s-dist').textContent='$'+fmt(totalDist);
+  document.getElementById('s-total').textContent='$'+fmt(total);
+  renderBars(cap,flows,saleVal);
+}
+function renderBars(cap,flows,saleVal){
+  const chart=document.getElementById('barChart');
+  chart.innerHTML='<div class="zero-line"></div>';
+  const maxVal=Math.max(cap,saleVal,...flows.map(f=>f.val));
+  const h=94;
+  function makeBar(val,label,cls,isNeg){
+    const wrap=document.createElement('div');wrap.className='bar-wrap';
+    const bar=document.createElement('div');bar.className='bar '+cls;
+    const px=Math.max(3,(Math.abs(val)/maxVal)*h);
+    bar.style.height=px+'px';
+    if(isNeg)bar.style.marginTop=(h-px)+'px';
+    const bv=document.createElement('div');bv.className='bar-val';
+    bv.textContent=(isNeg?'-':'')+'$'+fmt(Math.abs(val));
+    bv.style.top=isNeg?(h-px-14)+'px':'auto';
+    bv.style.bottom=isNeg?'auto':(px+2)+'px';
+    bar.appendChild(bv);
+    const bl=document.createElement('div');bl.className='bar-label';bl.textContent=label;
+    wrap.appendChild(bar);wrap.appendChild(bl);
+    return wrap;
+  }
+  chart.appendChild(makeBar(cap,'Año 1','negative',true));
+  flows.forEach((f,i)=>{
+    const isFinal=i===flows.length-1;
+    const v=isFinal?f.val+saleVal:f.val;
+    chart.appendChild(makeBar(v,isFinal?'10+V':'Año '+f.y,isFinal?'final':'positive',false));
+  });
+}
+calc();
+</script>
+</body>
+</html>
